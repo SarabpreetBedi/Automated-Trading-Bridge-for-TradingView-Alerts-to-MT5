@@ -1,0 +1,10 @@
+{
+  "secret": "SuperSecret123",
+  "cmd": "BUY",
+  "symbol": "EURUSD",
+  "lot": 0.1,
+  "sl": 20,
+  "tp": 40,
+  "magic": 111,
+  "account": "Acct1"
+}
