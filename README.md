@@ -1,92 +1,109 @@
-🚀 **TradingView to MT4/MT5 Bridge**
+<!-- Dark Background Styling for GitHub (simulated with code blocks) -->
 
-![](images/Screenshot19.png)
+<div style="background-color:#1e1e1e; color:#d4d4d4; padding:20px; border-radius:10px;">
 
-Secure, Real-Time Bridge Between TradingView Alerts and MetaTrader 4/5
+<h1>🚀 <span style="color:#4ec9b0;">TradingView to MT4/MT5 Bridge</span></h1>
 
-📌 Overview
-This project enables auto-execution of TradingView alerts on MetaTrader 4/5 via a secure, encrypted bridge. Designed for low-latency trading and multi-broker compatibility, it supports any instrument on both demo and live accounts.
+<p align="center">
+  <img src="images/Screenshot19.png" alt="Bridge Overview" width="500"/>
+</p>
 
-🔧 Components:
-🖧 Node.js Server – Receives webhook alerts via secure WebSocket (WSS).
+> <span style="color:#dcdcaa;">Secure, Real-Time Bridge Between TradingView Alerts and MetaTrader 4/5</span>
 
-🤖 MT5 Expert Advisor (EA) – Executes trades based on received alerts.
+---
 
-🗂️ Project Structure
+## 📌 Overview
 
-![](images/Screenshot14.png)
+This project enables **auto-execution** of TradingView alerts on MetaTrader 4/5 via a **secure, encrypted bridge**. Designed for **low-latency trading** and **multi-broker compatibility**, it supports any instrument on both demo and live accounts.
 
+### 🔧 Components
 
-🖥️ Setup Guide (Windows 11)
+- 🖧 **Node.js Server** – Receives webhook alerts via secure WebSocket (WSS).
+- 🤖 **MT5 Expert Advisor (EA)** – Executes trades based on received alerts.
 
-1️⃣ Install Prerequisites
+---
 
-Tool	Link
+## 🗂️ Project Structure
 
-Node.js	https://nodejs.org
+<p align="center">
+  <img src="images/Screenshot14.png" alt="Project Structure" width="600"/>
+</p>
 
-MetaTrader5	Download MT5
+---
 
-OpenSSL	Win32 OpenSSL
+## 🖥️ Setup Guide (Windows 11)
 
-💡 Tip: Use Git Bash (comes with OpenSSL)
+### 1️⃣ Install Prerequisites
 
-2️⃣ Setup Node.js Server
+| Tool         | Link                                                                 |
+|--------------|----------------------------------------------------------------------|
+| Node.js      | [https://nodejs.org](https://nodejs.org)                             |
+| MetaTrader 5 | [Download MT5](https://www.metatrader5.com/en/download)              |
+| OpenSSL      | [Win32 OpenSSL](https://slproweb.com/products/Win32OpenSSL.html)     |
 
+💡 **Tip**: Use Git Bash (comes with OpenSSL)
+
+---
+
+### 2️⃣ Setup Node.js Server
+
+```bash
 cd path\to\bridge\server
-
 npm install
-
-3️⃣ Generate SSL Certificates (For Testing)
-
-Run the following commands in PowerShell or Git Bash:
-
+3️⃣ Generate SSL Certificates (Localhost Testing)
+bash
+Copy
+Edit
 mkdir certs
-
 openssl req -x509 -newkey rsa:4096 -nodes \
   -keyout certs/server.key -out certs/server.crt \
   -days 365 -subj "/CN=localhost"
-  
 📁 Place server.key and server.crt in bridge/server/certs/
 
 4️⃣ Create .env File
-
+ini
+Copy
+Edit
+PORT=3000
 SECRET=SuperSecret123
-
 AES_PASS=MyAESPassphrase
-
 🔒 Keep this file secure. Keys must match your EA.
 
 5️⃣ Run the Server
-
+bash
+Copy
+Edit
 node server.js
-
-✅ Server is live at https://localhost:3000
+✅ Server is live at: https://localhost:3000
 
 6️⃣ Setup MetaTrader 5 EA
+Copy BridgeEA.mq5 to:
 
-Copy BridgeEA.mq5 to:  folder MQL5/Experts/
+swift
+Copy
+Edit
+MQL5/Experts/
+Open MetaEditor, compile BridgeEA.mq5
 
-a)Open MetaEditor, compile BridgeEA.mq5, BridgeEA2.mq5.
+Attach the EA to any chart
 
-b)Attach the EA to any chart.
+Configure Inputs:
 
-c)Configure Inputs:
+SocketServer: 127.0.0.1
 
-  SocketServer: 127.0.0.1
-  
-  SocketPort: 3000
-  
-  AES_PASS: Same as in .env
-  
-  RetrySec: 10
+SocketPort: 3000
+
+AES_PASS: Same as in .env
+
+RetrySec: 10
 
 📡 EA will connect to the Node.js server and listen for alerts.
 
 🧪 Testing Alerts
-
-Sample JSON Alert:
-
+Sample JSON Alert
+json
+Copy
+Edit
 {
   "secret": "SuperSecret123",
   "cmd": "BUY",
@@ -97,44 +114,44 @@ Sample JSON Alert:
   "magic": 123456,
   "trail": 0.03
 }
+Send it via:
 
-Send to:
-
-https://localhost:3000/webhook
-
-Use a tool like Postman or curl.
+bash
+Copy
+Edit
+POST https://localhost:3000/webhook
+Use Postman or curl for testing.
 
 📚 MQL5 Libraries Needed
-
 Library	Purpose
+SocketLib.mqh	WebSocket/TCP Client
+Base64.mqh	Base64 Encode/Decode
+JSON.mqh	JSON Parsing (from Codebase)
 
-1)SocketLib.mqh	WebSocket/TCP Client
+📥 Download from: MQL5 Codebase
 
-2)Base64.mqh	Encode/Decode Base64
+📬 Email-to-Socket Alternative (Free TradingView Accounts)
+Send alerts via email instead of webhooks.
 
-3)JSON.mqh	JSON Parsing (MQL5 Codebase)
-
-📥 Get them from: MQL5 Codebase
-
-📬 Alternative: Email-to-Socket (For Free TradingView Accounts)
-
-📧 Send alerts via email instead of webhook.
-
+🛠️ Steps
 Run the script:
 
+bash
+Copy
+Edit
 cd bridge/
-
 python3 email_to_socket.py
+In TradingView:
 
-Configure TradingView:
+Enable “Send Email” in alert
 
-Enable "Send Email"
+Add your target email (e.g., Gmail)
 
-Add your alert email address
+Use this JSON in the alert message:
 
-Use JSON format in message body
-
-
+json
+Copy
+Edit
 {
   "secret": "SuperSecret123",
   "cmd": "BUY",
@@ -146,45 +163,40 @@ Use JSON format in message body
 }
 The script:
 
-Logs into your Gmail
+Logs into Gmail
 
-Reads new TradingView alerts
+Reads new alerts
 
-Sends decrypted payload to MT5 bridge
+Sends them to the MT5 EA securely
 
-🔁 Runs every 10 seconds
+🔁 Checks inbox every 10 seconds
 
 🔗 Useful Links
+🌐 Node.js & npm: https://nodejs.org/
 
-Node.js  & npm: https://nodejs.org/
+📉 MetaTrader 5: https://www.metatrader5.com/en/download
 
-MetaTrader 5  https://www.metatrader5.com/en/download
-
-OpenSSL for Windows: https://slproweb.com/products/Win32OpenSSL.html
-
+🔐 OpenSSL: https://slproweb.com/products/Win32OpenSSL.html
 
 🛡️ Notes & Best Practices
+✅ Use CA-signed SSL certificates in production
 
-🔒 Use CA-signed SSL certificates in production
+🔐 Keep your AES keys & secrets confidential
 
-🔑 Keep AES and secret keys secure
+📝 Log file stored at: BridgeHistory.log
 
-📜 Log file: BridgeHistory.log
-
-🧩 Easily extend EA to support multi-broker/multi-account setups
+🌍 Extend EA for multi-account support if needed
 
 🖼️ Screenshots
-MetaTrader EA Connected
-
-![](images/Screenshot20.png)
-
-TradingView Alert Setup
-
-![](images/Screenshot15.png)
-![](images/Screenshot16.png)
+MetaTrader EA Connected	TradingView Alert Setup
+<img src="images/Screenshot20.png" width="300"/>	<img src="images/Screenshot15.png" width="300"/>
+<img src="images/Screenshot16.png" width="300"/>
 
 ❤️ Contributing
-Pull requests and issue reports are welcome. Please fork the repo and open a PR with clear commits.
+Pull requests and issue reports are welcome.
+Please fork the repo and open a PR with clean commits.
 
 📄 License
-MIT License – see the LICENSE file for details.
+MIT License – See LICENSE
+
+</div> ```
