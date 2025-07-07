@@ -32,7 +32,9 @@ This project enables **auto-execution** of TradingView alerts on MetaTrader 4/5 
 ---
 
 🖼️ Screenshots
+
 MetaTrader EA Connected	TradingView Alert Setup
+
 <img src="images/Screenshot20.png" width="300"/>	<img src="images/Screenshot15.png" width="300"/>
 <img src="images/Screenshot16.png" width="300"/>
 
@@ -76,23 +78,21 @@ node server.js
 ✅ Server is live at: https://localhost:3000
 
 6️⃣ Setup MetaTrader 5 EA
-Copy BridgeEA.mq5 to:
+Copy BridgeEA.mq5 to:MQL5/Experts/
 
+1)Open MetaEditor, compile BridgeEA.mq5
 
-MQL5/Experts/
-Open MetaEditor, compile BridgeEA.mq5
+2)Attach the EA to any chart
 
-Attach the EA to any chart
+3)Configure Inputs:
 
-Configure Inputs:
-
-SocketServer: 127.0.0.1
-
-SocketPort: 3000
-
-AES_PASS: Same as in .env
-
-RetrySec: 10
+  SocketServer: 127.0.0.1
+  
+  SocketPort: 3000
+  
+  AES_PASS: Same as in .env
+  
+  RetrySec: 10
 
 📡 EA will connect to the Node.js server and listen for alerts.
 
@@ -109,13 +109,14 @@ Sample JSON Alert
   "magic": 123456,
   "trail": 0.03
 }
-Send it via:
 
+Send it via:
 
 POST https://localhost:3000/webhook
 Use Postman or curl for testing.
 
 📚 MQL5 Libraries Needed
+
 Library	Purpose
 SocketLib.mqh	WebSocket/TCP Client
 Base64.mqh	Base64 Encode/Decode
@@ -131,6 +132,7 @@ Run the script:
 
 cd bridge/
 python3 email_to_socket.py
+
 In TradingView:
 
 Enable “Send Email” in alert
@@ -149,6 +151,7 @@ Use this JSON in the alert message:
   "tp": 1.2100,
   "magic": 123456
 }
+
 The script:
 
 Logs into Gmail
@@ -184,4 +187,3 @@ Please fork the repo and open a PR with clean commits.
 📄 License
 MIT License – See LICENSE
 
-</div> ```
