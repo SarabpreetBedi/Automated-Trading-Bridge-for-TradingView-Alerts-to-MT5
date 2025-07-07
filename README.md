@@ -31,6 +31,11 @@ This project enables **auto-execution** of TradingView alerts on MetaTrader 4/5 
 
 ---
 
+🖼️ Screenshots
+MetaTrader EA Connected	TradingView Alert Setup
+<img src="images/Screenshot20.png" width="300"/>	<img src="images/Screenshot15.png" width="300"/>
+<img src="images/Screenshot16.png" width="300"/>
+
 ## 🖥️ Setup Guide (Windows 11)
 
 ### 1️⃣ Install Prerequisites
@@ -51,9 +56,7 @@ This project enables **auto-execution** of TradingView alerts on MetaTrader 4/5 
 cd path\to\bridge\server
 npm install
 3️⃣ Generate SSL Certificates (Localhost Testing)
-bash
-Copy
-Edit
+
 mkdir certs
 openssl req -x509 -newkey rsa:4096 -nodes \
   -keyout certs/server.key -out certs/server.crt \
@@ -61,27 +64,21 @@ openssl req -x509 -newkey rsa:4096 -nodes \
 📁 Place server.key and server.crt in bridge/server/certs/
 
 4️⃣ Create .env File
-ini
-Copy
-Edit
+
 PORT=3000
 SECRET=SuperSecret123
 AES_PASS=MyAESPassphrase
 🔒 Keep this file secure. Keys must match your EA.
 
 5️⃣ Run the Server
-bash
-Copy
-Edit
+
 node server.js
 ✅ Server is live at: https://localhost:3000
 
 6️⃣ Setup MetaTrader 5 EA
 Copy BridgeEA.mq5 to:
 
-swift
-Copy
-Edit
+
 MQL5/Experts/
 Open MetaEditor, compile BridgeEA.mq5
 
@@ -101,9 +98,7 @@ RetrySec: 10
 
 🧪 Testing Alerts
 Sample JSON Alert
-json
-Copy
-Edit
+
 {
   "secret": "SuperSecret123",
   "cmd": "BUY",
@@ -116,9 +111,7 @@ Edit
 }
 Send it via:
 
-bash
-Copy
-Edit
+
 POST https://localhost:3000/webhook
 Use Postman or curl for testing.
 
@@ -136,9 +129,6 @@ Send alerts via email instead of webhooks.
 🛠️ Steps
 Run the script:
 
-bash
-Copy
-Edit
 cd bridge/
 python3 email_to_socket.py
 In TradingView:
@@ -149,9 +139,7 @@ Add your target email (e.g., Gmail)
 
 Use this JSON in the alert message:
 
-json
-Copy
-Edit
+
 {
   "secret": "SuperSecret123",
   "cmd": "BUY",
@@ -187,10 +175,7 @@ Sends them to the MT5 EA securely
 
 🌍 Extend EA for multi-account support if needed
 
-🖼️ Screenshots
-MetaTrader EA Connected	TradingView Alert Setup
-<img src="images/Screenshot20.png" width="300"/>	<img src="images/Screenshot15.png" width="300"/>
-<img src="images/Screenshot16.png" width="300"/>
+
 
 ❤️ Contributing
 Pull requests and issue reports are welcome.
