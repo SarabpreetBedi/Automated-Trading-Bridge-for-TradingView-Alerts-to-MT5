@@ -7,8 +7,8 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 import time
 
-EMAIL = 'bedisarabpreet@gmail.com'
-PASSWORD = 'sswh okvu viai iaov'
+EMAIL = 'your_tradingview_email@gmail.com'
+PASSWORD = '2F Apps password'
 SERVER = 'imap.gmail.com'
 SOCKET_HOST = '127.0.0.1'
 SOCKET_PORT = 3000
