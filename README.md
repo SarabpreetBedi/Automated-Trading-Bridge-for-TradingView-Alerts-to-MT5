@@ -36,7 +36,8 @@ This project enables **auto-execution** of TradingView alerts on MetaTrader 4/5 
 MetaTrader EA Connected	TradingView Alert Setup
 
 <img src="images/Screenshot20.png" width="300"/>	<img src="images/Screenshot15.png" width="300"/>
-<img src="images/Screenshot16.png" width="300"/>
+<img src="images/Screenshot16.png" width="300"/>  <img src="images/Screenshot7.png" width="300"/>
+<img src="images/Screenshot8.png" width="300"/>  <img src="images/Screenshot9.png" width="300"/>
 
 ## 🖥️ Setup Guide (Windows 11)
 
@@ -178,11 +179,6 @@ Sends them to the MT5 EA securely
 
 🌍 Extend EA for multi-account support if needed
 
-
-
-❤️ Contributing
-Pull requests and issue reports are welcome.
-Please fork the repo and open a PR with clean commits.
 
 📄 License
 MIT License – See LICENSE
