@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  bridge-server:
+    build: .
+    container_name: bridge-server
+    ports:
+      - "8443:8443"
+      - "9000:9000"
+      - "5000:5000"
+    volumes:
+      - ./certs:/app/certs:ro
+      - ./server.js:/app/server.js:ro
+      - ./package.json:/app/package.json:ro
+      - ./package-lock.json:/app/package-lock.json:ro
+      - ./.env:/app/.env:ro
+    environment:
+      - NODE_ENV=production
