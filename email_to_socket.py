@@ -6,8 +6,8 @@ from datetime import datetime
 import time
 
 # Email login credentials
-EMAIL = 'bedisarabpreet@gmail.com'
-PASSWORD = 'sswh okvu viai iaov'
+EMAIL = 'your_trading_account@gmail.com'
+PASSWORD = '2 F App password'
 SERVER = 'imap.gmail.com'
 
 # MT5 "Files" folder path
