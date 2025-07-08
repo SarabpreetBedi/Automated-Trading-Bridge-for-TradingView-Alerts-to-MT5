@@ -113,8 +113,21 @@ Sample JSON Alert
 
 Send it via:
 
-POST https://localhost:3000/webhook
-Use Postman or curl for testing.
+🧪TradingView Alert (Actual Example)
+
+Inside TradingView's alert box:
+json
+
+{
+  "cmd": "BUY",
+  "symbol": "EURUSD",
+  "lot": 0.1,
+  "sl": 20,
+  "tp": 40
+}
+You will need something like email_to_socket.py oR
+TradingView webhook → WebSocket bridge to forward the alerts to ws://localhost:8080.
+
 
 📚 MQL5 Libraries Needed
 
