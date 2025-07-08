@@ -1,53 +1,137 @@
-import express from "express";
-import https from "https";
-import fs from "fs";
-import { WebSocketServer } from "ws";
-import crypto from "crypto";
-import dotenv from "dotenv";
-dotenv.config();
+require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+const https = require('https');
+const WebSocket = require('ws');
+const net = require('net');
+const http = require('http'); // Only needed if you want to keep the non-secure HTTP endpoint
 
-const PORT = process.env.PORT || 3000;
-const SECRET = process.env.SECRET;
-const AES_PASS = process.env.AES_PASS;
+const certPath = path.join(__dirname, 'certs');
+const key = fs.readFileSync(path.join(certPath, 'server.key'));
+const cert = fs.readFileSync(path.join(certPath, 'server.crt'));
 
-const app = express();
-app.use(express.json());
+const WS_PORT = process.env.WS_PORT || 8443; // Use 8443 for secure WebSocket
+const TCP_PORT = process.env.TCP_PORT || 9000;
+const HTTP_PORT = 5000;
 
-const server = https.createServer({
-  key: fs.readFileSync("certs/server.key"),
-  cert: fs.readFileSync("certs/server.crt")
-}, app);
+// --- Secure HTTPS & WebSocket server ---
+const httpsServer = https.createServer({ key, cert });
 
-const wss = new WebSocketServer({ server });
-const sockets = new Set();
+const wss = new WebSocket.Server({ server: httpsServer });
+const tcpClients = new Set();
 
-wss.on("connection", ws => {
-  console.log("EA connected");
-  sockets.add(ws);
-  ws.on("close", () => sockets.delete(ws));
+httpsServer.listen(WS_PORT, () => {
+  console.log(`HTTPS & WSS server running on https://localhost:${WS_PORT}`);
 });
 
-function encrypt(data) {
-  const iv = Buffer.alloc(16, 0); // Fixed IV (16 bytes of zeros)
-  const key = crypto.scryptSync(AES_PASS, "salt", 32);
-  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
-  const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
-  return encrypted.toString("base64");  // Directly return base64 (no IV prefix)
+// Broadcast to all WebSocket clients
+function broadcastWS(data) {
+  const json = JSON.stringify(data);
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(json);
+    }
+  });
 }
 
-app.post("/webhook", (req, res) => {
-  const sig = req.headers["x-signature"];
-  const body = JSON.stringify(req.body);
-  const hmac = crypto.createHmac("sha256", SECRET).update(body).digest("hex");
-  if (sig !== hmac) return res.status(403).send("Invalid signature");
+// Send to all TCP clients (as ASCII)
+function broadcastTCP(data) {
+  const json = JSON.stringify(data) + "\n";
+  tcpClients.forEach(socket => {
+    socket.write(json, 'ascii');
+  });
+}
 
-  const payload = JSON.stringify(req.body);
-  const encryptedMsg = encrypt(payload);
-  const logLine = `${new Date().toISOString()} | ${payload}\n`;
-  fs.appendFileSync("server.log", logLine);
+// WebSocket server
+wss.on('connection', ws => {
+  console.log('WebSocket client connected');
 
-  sockets.forEach(ws => ws.readyState === 1 && ws.send(encryptedMsg));
-  res.status(200).send("OK");
+  ws.on('message', message => {
+    console.log('WS Received:', message);
+    // Broadcast received WS message to TCP clients
+    let data;
+    try {
+      data = JSON.parse(message);
+      broadcastTCP(data);
+    } catch (e) {
+      console.error('Invalid JSON from WS:', e);
+    }
+  });
+
+  ws.on('close', () => {
+    console.log('WebSocket client disconnected');
+  });
 });
 
-server.listen(PORT, () => console.log(`HTTPS WebSocket server on port ${PORT}`));
+// TCP server for MT5 EA connection (not secure, for secure use tls module)
+const tcpServer = net.createServer(socket => {    
+  console.log('TCP client connected');
+  tcpClients.add(socket);
+
+  // Send a test trade immediately when a new TCP client connects (as ASCII)
+  const testTrade = {
+    cmd: "BUY",
+    symbol: "EURUSD",
+    lot: 0.1,
+    sl: 20,
+    tp: 40,
+    time: new Date().toISOString()
+  };
+  socket.write(JSON.stringify(testTrade) + "\n", 'ascii');
+
+  socket.on('data', data => {
+    console.log('TCP Received:', data.toString());
+    // (optional) Process TCP client messages here
+  });
+
+  socket.on('close', () => {
+    tcpClients.delete(socket);
+    console.log('TCP client disconnected');
+  });
+
+  socket.on('error', err => {
+    tcpClients.delete(socket);
+    console.error('TCP client error:', err);
+  });
+});
+
+tcpServer.listen(TCP_PORT, () => {
+  console.log(`TCP server listening on port ${TCP_PORT}`);
+});
+
+// For testing/demo, send a test trade every 30s to all clients (as ASCII)
+setInterval(() => {
+  const testTrade = {
+    cmd: "BUY",
+    symbol: "EURUSD",
+    lot: 0.1,
+    sl: 20,
+    tp: 40,
+    time: new Date().toISOString()
+  };
+  broadcastWS(testTrade);
+  broadcastTCP(testTrade);
+  console.log('Broadcast test trade:', testTrade);
+}, 30000);
+
+// --- HTTP server for /data endpoint (for MT5 EA WebRequest) ---
+http.createServer((req, res) => {
+  if (req.url === '/data') {
+    // Example trade JSON (customize as needed)
+    const trade = {
+      cmd: "BUY",
+      symbol: "EURUSD",
+      lot: 0.1,
+      sl: 20,
+      tp: 40,
+      time: new Date().toISOString()
+    };
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(trade));
+  } else {
+    res.writeHead(404);
+    res.end();
+  }
+}).listen(HTTP_PORT, () => {
+  console.log(`HTTP server listening on http://localhost:${HTTP_PORT}`);
+});
