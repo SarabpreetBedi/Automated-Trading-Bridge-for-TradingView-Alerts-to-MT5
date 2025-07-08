@@ -4,9 +4,9 @@
 
 <h1>🚀 <span style="color:#4ec9b0;">TradingView to MT4/MT5 Bridge</span></h1>
 
-<p align="center">
-  <img src="images/Screenshot19.png" alt="Bridge Overview" width="500"/>
-</p>
+<img src="images/Screenshot19.png" width="300"/>	<img src="images/Screenshot21.png" width="300"/>
+<img src="images/Screenshot22.png" width="300"/>  
+
 
 > <span style="color:#dcdcaa;">Secure, Real-Time Bridge Between TradingView Alerts and MetaTrader 4/5</span>
 
